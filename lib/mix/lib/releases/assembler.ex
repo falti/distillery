@@ -291,9 +291,9 @@ defmodule Mix.Releases.Assembler do
     name    = "#{release.name}"
     bin_dir             = Path.join(release.profile.output_dir, "bin")
     bootloader_path     = Path.join(bin_dir, name)
-    bootloader_path_win = Path.join(bin_dir, "#{name}_win")
+    bootloader_path_win = Path.join(bin_dir, "#{name}.bat")
     boot_path           = Path.join(rel_dir, "#{name}.sh")
-    boot_path_win       = Path.join(rel_dir, "#{name}.cmd")
+    boot_path_win       = Path.join(rel_dir, "boot_win.bat")
     template_params     = release.profile.overlay_vars
 
     with :ok <- File.mkdir_p(bin_dir),

@@ -289,19 +289,25 @@ defmodule Mix.Releases.Assembler do
   # the release if so configured
   defp write_binfile(release, rel_dir) do
     name    = "#{release.name}"
-    bin_dir         = Path.join(release.profile.output_dir, "bin")
-    bootloader_path = Path.join(bin_dir, name)
-    boot_path       = Path.join(rel_dir, "#{name}.sh")
-    template_params = release.profile.overlay_vars
+    bin_dir             = Path.join(release.profile.output_dir, "bin")
+    bootloader_path     = Path.join(bin_dir, name)
+    bootloader_path_win = Path.join(bin_dir, "#{name}_win")
+    boot_path           = Path.join(rel_dir, "#{name}.sh")
+    boot_path_win       = Path.join(rel_dir, "#{name}.cmd")
+    template_params     = release.profile.overlay_vars
 
     with :ok <- File.mkdir_p(bin_dir),
          :ok <- generate_nodetool(bin_dir),
          {:ok, bootloader_contents} <- Utils.template(:boot_loader, template_params),
+         {:ok, bootloader_contents_win} <- Utils.template(:boot_loader_win, template_params),
          {:ok, boot_contents} <- Utils.template(:boot, template_params),
+         {:ok, boot_contents_win} <- Utils.template(:boot_win, template_params),
          :ok <- File.write(bootloader_path, bootloader_contents),
          :ok <- File.write(boot_path, boot_contents),
          :ok <- File.chmod(bootloader_path, 0o777),
          :ok <- File.chmod!(boot_path, 0o777),
+         :ok <- File.write(bootloader_path_win, bootloader_contents_win),
+         :ok <- File.write(boot_path_win, boot_contents_win),
          :ok <- generate_start_erl_data(release, rel_dir),
          :ok <- generate_vm_args(release, rel_dir),
          :ok <- generate_sys_config(release, rel_dir),
